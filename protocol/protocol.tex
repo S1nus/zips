@@ -73,7 +73,7 @@
 \makeatother
 
 
-% Load version-specific properties from protocol.ver
+% Prefer per-job version properties, falling back to protocol.ver for existing builds.
 \newcommand{\docversion}{Version unavailable (check protocol.ver)}
 \newcommand{\SaplingSpec}{Overwinter+Sapling}
 \newcommand{\BlossomSpec}{Overwinter+Sapling+Blossom}
@@ -84,6 +84,7 @@
 \newcommand{\NUSixOneSpec}{NU6.1}
 \newcommand{\NUSixTwoSpec}{NU6.2}
 \newcommand{\NUSixThreeSpec}{NU6.3 proposal}
+\newcommand{\NUTachyonSpec}{NUTachyon}
 \newtoggle{issapling}
 \togglefalse{issapling}
 \newtoggle{isblossom}
@@ -102,11 +103,13 @@
 \togglefalse{isnusixtwo}
 \newtoggle{isnusixthree}
 \togglefalse{isnusixthree}
+\newtoggle{isnutachyon}
+\togglefalse{isnutachyon}
 \newtoggle{isnuseven}
 \togglefalse{isnuseven}
 \newtoggle{darkmode}
 \togglefalse{darkmode}
-\InputIfFileExists{protocol.ver}{}{}
+\InputIfFileExists{aux/\jobname.ver}{}{\InputIfFileExists{protocol.ver}{}{}}
 
 \iftoggle{darkmode}{
   \colorlet{crossrefblue}{MidnightBlue}
@@ -647,6 +650,7 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
   \colorlet{pink}{magenta!70}
   \definecolor{burgundy}{RGB}{210,20,80}
   \definecolor{brown}{RGB}{160,50,50}
+  \definecolor{teal}{RGB}{75,195,190}
   \colorlet{warningred}{BrickRed}
   \colorlet{cream}{yellow!20}
 
@@ -662,6 +666,7 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
   \colorlet{pink}{magenta!75}
   \definecolor{burgundy}{RGB}{200,18,75}
   \colorlet{brown}{Sepia}
+  \definecolor{teal}{RGB}{0,112,122}
   \colorlet{warningred}{BrickRed}
   \colorlet{cream}{yellow!20}
 
@@ -691,6 +696,8 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\nusixtwocolorname}{\nusixtwocolor}
 \newcommand{\nusixthreecolor}{blue}
 \newcommand{\nusixthreecolorname}{bright blue}
+\newcommand{\nutachyoncolor}{teal}
+\newcommand{\nutachyoncolorname}{\nutachyoncolor}
 \newcommand{\labelcolor}{cream}
 
 \iftoggle{isnuseven}{
@@ -700,6 +707,20 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
   \newcommand{\nuseven}[1]{}
   \newcommand{\notnuseven}[1]{#1}
   \newcommand{\notbeforenuseven}[1]{}
+}
+
+\iftoggle{isnutachyon}{
+  \providecommand{\baseurl}{https://zips.z.cash/protocol/nutachyon.pdf}
+  \toggletrue{isnusixthree}
+  \newcommand{\setnutachyon}{\color{\nutachyoncolor}}
+  \newcommand{\nutachyon}[1]{\texorpdfstring{{\setnutachyon{#1}}}{#1}}
+  \newcommand{\notnutachyon}[1]{}
+  \newcommand{\notbeforenutachyon}[1]{#1}
+} {
+  \newcommand{\setnutachyon}{}
+  \newcommand{\nutachyon}[1]{}
+  \newcommand{\notnutachyon}[1]{#1}
+  \newcommand{\notbeforenutachyon}[1]{}
 }
 
 \iftoggle{isnusixthree}{
@@ -983,6 +1004,7 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\NUSixTwo}{\readasunicode{004e200b0055200b0036002e0032}{\termandindexx{\upgradetype{NU6.2}}{NU6.2 (Network Upgrade 6.2)}}\xspace}
 % "N<zwsp>U<zwsp>6.3"
 \newcommand{\NUSixThree}{\readasunicode{004e200b0055200b0036002e0033}{\termandindexx{\upgradetype{NU6.3}}{NU6.3 (Network Upgrade 6.3)}}\xspace}
+\newcommand{\NUTachyon}{\readas{N U Tachyon upgrade}{\termandindexx{\upgradetype{NUTachyon}}{NUTachyon (Network Upgrade)}}\xspace}
 % "N<zwsp>U<zwsp>7"
 \newcommand{\NUSeven}{\readasunicode{004e200b0055200b0037}{\termandindexx{\upgradetype{NU7}}{NU7 (Network Upgrade 7)}}\xspace}
 
@@ -992,6 +1014,7 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\SproutProto}{\subprotocoltype{Sprout}}
 \newcommand{\SaplingProto}{\subprotocoltype{Sapling}}
 \newcommand{\OrchardProto}{\subprotocoltype{Orchard}}
+\newcommand{\TachyonProto}{\subprotocoltype{Tachyon}}
 
 % The Sprout shielded protocol.
 \newcommand{\SproutShieldedProtocol}{\termandindex{\SproutProto{} shielded protocol}{Sprout shielded protocol}}
@@ -1010,6 +1033,10 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\OrchardProtocolAdj}{\termandindex{\OrchardProto{}-protocol}{Orchard shielded protocol}}
 \newcommand{\Orchard}{\readas{Orchard protocol}{\OrchardProto}\xspace}
 \newcommand{\OrchardText}{\texorpdfstring{\OrchardProto}{Orchard}}
+
+% The Tachyon shielded protocol
+\newcommand{\Tachyon}{\readas{Tachyon protocol}{\TachyonProto}\xspace}
+\newcommand{\TachyonText}{\texorpdfstring{\TachyonProto}{Tachyon}}
 
 % The Sapling or Orchard shielded protocols
 \newcommand{\SaplingOrOrchard}{\Sapling{}\nufive{ or \Orchard{}}\xspace}
@@ -1576,6 +1603,7 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\extendedSpendingKey}{\term{extended spending key}}
 \newcommand{\extendedSpendingKeys}{\terms{extended spending key}}
 \newcommand{\payingKey}{\term{paying key}}
+\newcommand{\paymentKey}{\term{payment key}}
 \newcommand{\transmissionKey}{\term{transmission key}}
 \newcommand{\transmissionKeys}{\terms{transmission key}}
 \newcommand{\diversifiedTransmissionKey}{\term{diversified transmission key}}
@@ -1964,6 +1992,7 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\AuthSignRandomizedPrivate}{\mathsf{rsk}}
 \newcommand{\AuthSignRandomizer}{\alpha}
 \newcommand{\AuthSignRandomizerRepr}{{\AuthSignRandomizer\Repr}}
+\newcommand{\PaymentKey}{\mathsf{pk}}
 \newcommand{\AuthProvePrivate}{\mathsf{nsk}}
 \newcommand{\AuthProvePrivateRepr}{{\AuthProvePrivate\Repr}}
 \newcommand{\AuthProveBaseSapling}{\mathcal{H}^{\SaplingProto}}
@@ -2938,6 +2967,7 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\prenuseven}[1]{\notbeforenuseven{\nuseven{[Pre-\NUSeven\!]\,}} {#1}}
 \newcommand{\nusevenonly}[1]{\nuseven{[\NUSeven only]\, {#1}}}
 \newcommand{\nusevenonward}[1]{\nuseven{[\NUSeven onward]\, {#1}}}
+\newcommand{\nutachyononward}[1]{\nutachyon{[\NUTachyon onward]\, {#1}}}
 \newcommand{\prenusixthree}[1]{\notbeforenusixthree{\nusixthree{[Pre-\NUSixThree\!]\,}} {#1}}
 \newcommand{\nusixthreeonly}[1]{\nusixthree{[\NUSixThree only]\, {#1}}}
 \newcommand{\nusixthreeonward}[1]{\nusixthree{[\NUSixThree onward]\, {#1}}}
@@ -3049,7 +3079,8 @@ memory-hard \proofOfWork algorithm.
 \notnusixone{\nusix{\thisspecdefines{\NUOverwinter, \NUSapling, \NUBlossom, \NUHeartwood, \NUCanopy, \NUFive, and \NUSix}}}%
 \notnusixtwo{\nusixone{\thisspecdefines{\NUOverwinter, \NUSapling, \NUBlossom, \NUHeartwood, \NUCanopy, \NUFive, \NUSix, and \NUSixOne}}}%
 \notnusixthree{\nusixtwo{\thisspecdefines{\NUOverwinter, \NUSapling, \NUBlossom, \NUHeartwood, \NUCanopy, \NUFive, \NUSix, \NUSixOne, and \NUSixTwo}}}%
-\nusixthree{\thisspecdefinesandproposes{\NUOverwinter, \NUSapling, \NUBlossom, \NUHeartwood, \NUCanopy, \NUFive, \NUSix, \NUSixOne, \NUSixTwo}{\NUSixThree}}%
+\notnutachyon{\nusixthree{\thisspecdefinesandproposes{\NUOverwinter, \NUSapling, \NUBlossom, \NUHeartwood, \NUCanopy, \NUFive, \NUSix, \NUSixOne, \NUSixTwo}{\NUSixThree}}}%
+\nutachyon{\thisspecdefines{\NUOverwinter, \NUSapling, \NUBlossom, \NUHeartwood, \NUCanopy, \NUFive, \NUSix, \NUSixOne, \NUSixTwo, \NUSixThree, and \NUTachyon}}%
 It is a work in progress. Protocol differences from \Zerocash and \Bitcoin are also explained.
 
 \vspace{2ex}
@@ -3130,6 +3161,9 @@ are highlighted in \nusixtwo{\nusixtwocolorname}.}
 
 \notbeforenusixthree{Changes specific to the proposed \NUSixThree upgrade following \NUSixTwo
 are highlighted in \nusixthree{\nusixthreecolorname}.}
+
+\notbeforenutachyon{Changes specific to the \NUTachyon upgrade
+are highlighted in \nutachyon{\nutachyoncolorname}.}
 
 All of these are also changes from \Zerocash.
 
@@ -3538,23 +3572,42 @@ coordinates (see \crossref{jubjub}).
 
 \lsubsection{Payment Addresses and Keys}{addressesandkeys}
 
-Users who wish to receive shielded payments in the \Zcash protocol must have a
+Users who wish to receive shielded payments in the \Zcash protocol
+\nutachyon{using \Sprout\sapling{, \Sapling}\nufive{, or \Orchard}} must have a
 \defining{\shieldedPaymentAddress, which is generated from a \spendingKey.}
 
 \introlist
 The following diagrams depict the relations between key
-components in \Sprout\sapling{ and \Sapling}\nufive{ and \Orchard}.
+components in \Sprout\sapling{ and \Sapling}\nufive{ and \Orchard}\nutachyon{ and \Tachyon}.
 Arrows point from a component to any other component(s) that can be derived
 from it. Double lines indicate that the same component is used in multiple
 abstractions.
 
-\readas{Image description: three diagrams showing the derivation of Sprout, Sapling, and Orchard key components.
+\readas{Image description: diagrams showing the derivation of shielded-protocol key components.
 The key components are shown by their mathematical abbreviations. They are collected into rounded boxes for each named
 abstraction, which are colour-coded from purple to green in the direction of derivation, or from more secret to
-less secret values. The information in the diagram is otherwise mostly redundant with the textual description
-of the key components and their derivation that follows it.}{\vspace{-2ex}\begin{center}
+less secret values. \notbeforenutachyon{The Tachyon diagram shows the master spending key sk feeding an HD wallet, which derives
+the spend authorization key ask and nullifier key nk. The key ask derives ak; the proof authorization key
+comprises ak and nk and derives the payment key pk. The diagram also shows the randomized spend validating key rk.}
+}{\vspace{-2ex}\begin{center}
+\notnutachyon{
 \notnufive{\includegraphics[scale=.5]{key_components_sapling}}
 \nufive{\includegraphics[scale=.385]{key_components_orchard\imagesuffix}}
+}
+\notbeforenutachyon{
+\begin{minipage}[t]{0.74\textwidth}
+\vspace{0pt}
+\notnufive{\includegraphics[width=\linewidth]{key_components_sapling}}
+\nufive{\includegraphics[width=\linewidth]{key_components_orchard\imagesuffix}}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\textwidth}
+\vspace{0pt}
+\centering
+{\small\bfseries\itshape \nutachyon{Tachyon}}\par
+\smallskip
+\includegraphics[width=\linewidth]{key_components_tachyon}
+\end{minipage}
+}
 \end{center}}
 
 \sproutspecific{
@@ -3602,12 +3655,27 @@ The derivations of $\AuthSignPrivate$ and $\CommitIvkRand$ shown are not the onl
 For further detail see \shortcrossref{orchardkeycomponents}.
 }} %notbeforenufive
 
+\notbeforenutachyon{\vspace{1ex}}
+\nutachyononward{
+A \Tachyon \spendingKey $\SpendingKey$ is used to derive a
+\authSigningKey $\AuthSignPrivate$ and a \authProvingKey $(\AuthSignPublic, \NullifierKey)$.
+From the \authProvingKey we can derive a \defining{\paymentKey $\PaymentKey$} (see \crossref{tachyonkeycomponents}).
+
+Unlike \Orchard, \Tachyon does not define \diversifiedPaymentAddresses or
+viewing keys in the shielded protocol. The \paymentKey is deterministic in $(\AuthSignPublic, \NullifierKey)$, so obtaining
+distinct payment keys requires distinct key pairs, rather than changing a
+\diversifier while retaining the same pair.
+} %nutachyononward
+
 \vspace{-2ex}
-\sapling{\nnote{Most \Zcash wallets derive \SaplingAndOrchard keys and addresses according to \cite{ZIP-32}.}}
+\nnote{
+\sapling{Most \Zcash wallets derive \SaplingAndOrchard keys and addresses according to \cite{ZIP-32}.}
+}
 
 \introlist
 \vspace{2ex}
-The composition of \shieldedPaymentAddresses, \incomingViewingKeys,
+\notnutachyon{The}\nutachyon{For \Sprout\sapling{, \Sapling}\nufive{, and \Orchard}, the}
+composition of \shieldedPaymentAddresses, \incomingViewingKeys,
 \sapling{\fullViewingKeys,} and \spendingKeys is a cryptographic protocol
 detail that should not normally be exposed to users. However, user-visible
 operations should be provided to obtain a
@@ -5914,6 +5982,14 @@ The \diversifiedPaymentAddress with \diversifierIndex $0$ is called the \definin
 } %nufive
 
 
+\nutachyon{
+\introsection
+\lsubsubsection{\TachyonText{} Key Components}{tachyonkeycomponents}
+
+\todo{Specify key-component types, derivation, and payment-key construction.}
+} %nutachyon
+
+
 \lsubsection{JoinSplit Descriptions}{joinsplitdesc}
 
 A \joinSplitTransfer, as specified in \crossref{joinsplit}, is encoded in
@@ -7503,6 +7579,15 @@ and decrypt incoming \notes. However, the other party will not obtain \spendingA
 \transactions, since it is not able to create a \spendAuthSignature by itself.
 } %pnote
 } %sapling
+
+
+\nutachyon{
+\introsection
+\lsubsection{Action Authorization (\TachyonText)}{tachyonactionauth}
+
+\todo{Specify note-bound randomizer derivation, action signing keys, and signature
+verification for spends and outputs.}
+} %nutachyon
 
 
 \intropart
@@ -13282,11 +13367,15 @@ and \cite{ZIP-2006}, with updates to \cite{ZIP-209} and \cite{ZIP-317}. Addition
 and rationale is given in \cite{ZODL-Ironwood}. Specifications relating to wallet support and
 migration to the \IronwoodPool are in \cite{ZIP-318} and \cite{ZIP-326}.}
 
+\nutachyon{The \defining{\NUTachyon} \networkUpgrade introduces the \Tachyon shielded protocol.
+\todo{Specify activation parameters for \NUTachyon.}}
+
 \introlist
 \vspace{1.5ex}
 This section summarizes the strategy for upgrading from the Sprout epoch to subsequent epochs
 of the protocol (\NUOverwinter, \NUSapling, \NUBlossom, \NUHeartwood, \NUCanopy, \NUFive, \NUSix,
-\NUSixOne, \NUSixTwo, and \NUSixThree), and for future upgrades.
+\NUSixOne, \NUSixTwo, \notnutachyon{and }\NUSixThree\nutachyon{, and \NUTachyon}),
+and for future upgrades.
 
 \defining{The \networkUpgrade mechanism is described in \cite{ZIP-200}.}
 
@@ -15923,6 +16012,21 @@ Peter Newell's illustration of the Jubjub bird, from \cite{Carroll1902}.
 
 \intropart
 \lsection{Change History}{changehistory}
+
+\nutachyon{
+\historyentry{Unreleased}{}
+
+\begin{itemize}
+    \item Define the \NUTachyon upgrade and its specification build target.
+    \item Add the Tachyon key-derivation diagram alongside the existing key-component
+          diagrams in \shortcrossref{addressesandkeys}, and introduce \nutachyoncolorname{}
+          highlighting for \NUTachyon additions.
+    \item Describe Tachyon key components, note-bound key randomization, and the
+          separation of payment protocols from the shielded protocol in \shortcrossref{addressesandkeys},
+          with placeholders in \shortcrossref{tachyonkeycomponents} and \shortcrossref{tachyonactionauth}.
+\end{itemize}
+} %nutachyon
+
 
 \historyentry{2026.7.0}{2026-07-05}
 
