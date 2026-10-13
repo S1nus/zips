@@ -1072,6 +1072,10 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\IronwoodPool}{\termpoolandindex{Ironwood pool}{Ironwood pool}}
 \newcommand{\IronwoodPoolAdj}{\termpoolandindex{Ironwood-pool}{Ironwood pool}}
 
+% The Tachyon pool
+\newcommand{\TachyonPool}{\termpoolandindex{Tachyon pool}{Tachyon pool}}
+\newcommand{\TachyonPoolAdj}{\termpoolandindex{Tachyon-pool}{Tachyon pool}}
+
 % Sapling or Orchard pool, excluding Ironwood.
 \newcommand{\SaplingOrOrchardPool}{\sapling{\SaplingPool{}}\nufive{ or \OrchardPool{}}\xspace}
 \newcommand{\SaplingOrOrchardPoolAdj}{\sapling{\SaplingPoolAdj{}}\nufive{ or \OrchardPoolAdj{}}\xspace}
@@ -1993,6 +1997,8 @@ electronic commerce and payment, financial privacy, proof of work, zero knowledg
 \newcommand{\AuthSignRandomizer}{\alpha}
 \newcommand{\AuthSignRandomizerRepr}{{\AuthSignRandomizer\Repr}}
 \newcommand{\PaymentKey}{\mathsf{pk}}
+\newcommand{\NoteMasterKey}{\mathsf{mk}}
+\newcommand{\DeriveNoteMasterKey}{\mathsf{Derive\_mk}^{\TachyonProto}}
 \newcommand{\AuthProvePrivate}{\mathsf{nsk}}
 \newcommand{\AuthProvePrivateRepr}{{\AuthProvePrivate\Repr}}
 \newcommand{\AuthProveBaseSapling}{\mathcal{H}^{\SaplingProto}}
@@ -3721,7 +3727,7 @@ A \defining{\note} is a representation of value held in a \defining{\shieldedPoo
 
 Each \shieldedPool operates according to the rules of a \shieldedProtocol, and has
 its own \treestate (see \crossref{transactions}). The currently deployed \shieldedPools
-are the \SproutPool\sapling{ and \SaplingLikePools}.
+are the \SproutPool\sapling{ and \SaplingLikePools}\nutachyon{ and \TachyonPool}.
 
 Each \note (denoted $\NoteTuple{}$) belongs to one of these \shieldedPools.
 It represents that a value $\Value$ is spendable by the recipient who
@@ -3729,6 +3735,8 @@ holds the \spendingKey corresponding to a given \shieldedPaymentAddress.
 The form of a \shieldedPaymentAddress is defined by a \shieldedProtocol;
 it can be used to send funds represented by new \notes to the address, in
 the \shieldedPoolps supported by that protocol.
+\nutachyon{\Tachyon instead identifies the recipient by a \paymentKey, leaving address
+formats and \note transmission to higher-level payment protocols.}
 
 \nusixthreeonward{The \OrchardShieldedProtocol supports both the \OrchardPool and the
 \IronwoodPool. However, there are restrictions on sending to the \OrchardPool after
@@ -3759,6 +3767,13 @@ Let $\PRFnf{Orchard}{}$ be as defined in \crossref{concreteprfs}.
 
 Let $\ParamP{q}$ be as defined in \crossref{pallasandvesta}.
 } %nufive
+
+\nutachyon{
+Let $\NoteCommitAlg{Tachyon}$ be as defined in \crossref{concretetachyonnotecommit}.
+
+Let $\DeriveNoteMasterKey$ and $\PRFnf{Tachyon}{}$ be as defined in
+\crossref{concretetachyonprfs}.
+} %nutachyon
 
 \vspace{2ex}
 \introlist
@@ -3839,6 +3854,34 @@ Let $\NoteType{Orchard}$ be the type of an \OrchardLikePoolAdj \note, i.e.
            \times \NoteUniqueRandTypeOrchard \times \NoteNullifierRandType \times \NoteCommitTrapdoor{Orchard}$.
 \end{formulae}
 } %nufive
+
+\nutachyon{
+\vspace{1ex}
+\introlist
+A \TachyonPoolAdj \note is a tuple
+$(\PaymentKey, \Value, \NoteNullifierRand, \NoteCommitRand)$, where:
+\begin{itemize}
+  \item $\PaymentKey \typecolon \GF{\ParamP{q}}$ is the recipient's \paymentKey;
+  \item $\Value \typecolon \range{0}{\MAXMONEY}$ is an integer
+        representing the value of the \note in \zatoshi;
+  \item $\NoteNullifierRand \typecolon \GF{\ParamP{q}}$ is a per-note nullifier trapdoor.
+        Together with the recipient's $\NullifierKey$, it is used by $\DeriveNoteMasterKey$
+        to derive a note master key $\NoteMasterKey \typecolon \GF{\ParamP{q}}$.
+        This key is used by $\PRFnf{Tachyon}{}$ to derive the \note's \nullifier for each epoch;
+  \item $\NoteCommitRand \typecolon \NoteCommitTrapdoor{Tachyon}$ is a random
+        \commitmentTrapdoor over $\GF{\ParamP{q}}$.
+\end{itemize}
+
+\introlist
+Let $\NoteType{Tachyon}$ be the type of a \TachyonPoolAdj \note, i.e.
+\begin{formulae}
+  \item $\NoteType{Tachyon} := \GF{\ParamP{q}} \times \range{0}{\MAXMONEY}
+           \times \GF{\ParamP{q}} \times \NoteCommitTrapdoor{Tachyon}$.
+\end{formulae}
+
+Unlike \Orchard, a \TachyonPoolAdj \note has no \diversifier,
+\diversifiedTransmissionKey, or $\NoteUniqueRand$ component.
+} %nutachyon
 
 \vspace{2ex}
 Creation of new \notes is described in \crossref{send}.
@@ -10398,6 +10441,16 @@ PRF when keyed by its first argument, with its second argument as input.
 \end{nnotes}
 } %nufive
 
+\nutachyon{
+\introsection
+\lsubsubsubsection{Pseudo Random Functions (\TachyonText)}{concretetachyonprfs}
+
+\todo{Specify $\DeriveNoteMasterKey$, deriving $\NoteMasterKey$ from $\NullifierKey$
+and $\NoteNullifierRand$, and $\PRFnf{Tachyon}{\NoteMasterKey}$, deriving a nullifier
+for an epoch. Include their types, domain separation, Tachyon Poseidon sponge
+parameters, and the selection of an epoch's nullifier from a group of sponge outputs.}
+} %nutachyon
+
 
 \introsection
 \vspace{-1ex}
@@ -11417,6 +11470,17 @@ is not square in $\GF{\ParamP{q}}$.
 \end{nnotes}
 } %nufive
 
+
+\nutachyon{
+\introsection
+\lsubsubsubsection{Note Commitments (\TachyonText)}{concretetachyonnotecommit}
+
+\todo{Specify $\NoteCommitAlg{Tachyon}$, committing to
+$(\PaymentKey, \Value, \NoteNullifierRand)$ with trapdoor $\NoteCommitRand$.
+Include its types, the trapdoor domain and generation, Tachyon Poseidon sponge
+parameters and domain separation, and handling of a zero commitment.
+Resolve whether zero is excluded from $\NoteCommitTrapdoor{Tachyon}$.}
+} %nutachyon
 
 \introsection
 \lsubsubsection{Represented Groups and Pairings}{concretepairing}
@@ -16024,6 +16088,9 @@ Peter Newell's illustration of the Jubjub bird, from \cite{Carroll1902}.
     \item Describe Tachyon key components, note-bound key randomization, and the
           separation of payment protocols from the shielded protocol in \shortcrossref{addressesandkeys},
           with placeholders in \shortcrossref{tachyonkeycomponents} and \shortcrossref{tachyonactionauth}.
+    \item Add the Tachyon pool and note tuple to \shortcrossref{notes}, with placeholders
+          for note commitments and nullifier derivation in
+          \shortcrossref{concretetachyonnotecommit} and \shortcrossref{concretetachyonprfs}.
 \end{itemize}
 } %nutachyon
 
